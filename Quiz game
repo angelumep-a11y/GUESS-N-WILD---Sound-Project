@@ -1,0 +1,309 @@
+package sountestbeta1.newpackage;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.*;
+import java.util.Random;
+import javax.sound.sampled.*;
+
+public class QuizGame extends JFrame implements ActionListener {
+
+    // LABELS
+    JLabel titleLabel;
+    JLabel playerLabel;
+    JLabel scoreLabel;
+    JLabel resultLabel;
+
+    // BUTTONS
+    JButton playButton;
+
+    JButton lemurButton;
+    JButton owlButton;
+    JButton donkeyButton;
+    JButton lizardButton;
+    JButton monkeyButton;
+    JButton peacockButton;
+    JButton rhinocerosButton;
+    JButton bearButton;
+
+
+    JPanel topPanel;
+    JPanel buttonPanel;
+
+    String[] animals = {"Lemur","Owl", "Donkey","Lizard", "Monkey", "Peacock", "Rhinoceros", "Bear"};
+    String currentAnimal;
+    Random random = new Random();
+
+    int score = 0;
+    int questionNumber = 0;
+    int totalQuestions = 5;
+    
+    boolean answered = false;
+
+    String playerName;
+
+    Clip clip;
+
+    // CONSTRUCTOR
+    public QuizGame() {
+
+      
+        playerName = JOptionPane.showInputDialog(null, "Enter Player Name:" );
+         if (playerName == null || playerName.trim().equals("")) {
+             playerName = "Player";}
+
+        // WINDOW
+        setTitle("GUESS'N WILD QUIZ");
+        
+        setSize(950, 650);
+        
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        
+        setLocationRelativeTo(null);
+        
+        setResizable(false);
+        
+       
+        setLayout(new BorderLayout(15, 15));
+        
+        getContentPane().setBackground( new Color(245, 247, 250));
+        
+
+        titleLabel = new JLabel("GUESS'N WILD",SwingConstants.CENTER);
+        titleLabel.setFont(new Font("Segoe UI", Font.BOLD, 40));
+        titleLabel.setForeground( new Color(0, 100, 100));
+
+   
+        playerLabel = new JLabel( "Player: " + playerName, SwingConstants.CENTER );
+        playerLabel.setFont(new Font("Segoe UI", Font.PLAIN, 22) );
+        
+        // SCORE 
+        scoreLabel = new JLabel("Score: 0",SwingConstants.CENTER);
+        scoreLabel.setFont( new Font("Segoe UI", Font.BOLD, 24));
+        scoreLabel.setForeground( new Color(34, 139, 34));
+        
+        resultLabel = new JLabel( "Click PLAY SOUND",SwingConstants.CENTER);
+        resultLabel.setFont(new Font("Segoe UI", Font.PLAIN, 20));
+
+        // Buttons
+        playButton = new JButton("PLAY SOUND");
+
+        lemurButton = new JButton("LEMUR");
+        owlButton = new JButton("OWL");
+        donkeyButton = new JButton("DONKEY");
+        lizardButton = new JButton("LIZARD");
+        monkeyButton = new JButton("MONKEY");
+        peacockButton = new JButton("PEACOCK");
+        rhinocerosButton = new JButton("RHINOCEROS");
+        bearButton = new JButton("BEAR");
+
+        JButton[] buttons = {
+            playButton,
+            lemurButton,
+            owlButton,
+            donkeyButton,
+            lizardButton,
+            monkeyButton,
+            peacockButton,
+            rhinocerosButton,
+            bearButton
+        };
+
+        for (JButton b : buttons) {
+            styleButton(b);
+            b.addActionListener(this);}
+
+        topPanel = new JPanel();
+        topPanel.setLayout(new GridLayout(5, 1, 10, 10));
+        topPanel.setBackground(new Color(245, 245, 220));
+        topPanel.setBorder( BorderFactory.createEmptyBorder(20,20,20,20 )
+        );
+
+        topPanel.add(titleLabel);
+        topPanel.add(playerLabel);
+        topPanel.add(scoreLabel);
+        topPanel.add(playButton);
+        topPanel.add(resultLabel);
+
+        
+        buttonPanel = new JPanel();
+        buttonPanel.setLayout(  new GridLayout(2, 4, 20, 20));
+        buttonPanel.setBackground(new Color(245, 247, 250));
+        buttonPanel.setBorder(BorderFactory.createEmptyBorder(20,20,20,20 ));
+
+        buttonPanel.add(lemurButton);
+        buttonPanel.add(owlButton);
+        buttonPanel.add(donkeyButton);
+        buttonPanel.add(lizardButton);
+        buttonPanel.add(monkeyButton);
+        buttonPanel.add(peacockButton);
+        buttonPanel.add(rhinocerosButton);
+        buttonPanel.add(bearButton);
+        add(topPanel, BorderLayout.NORTH);
+
+        add(buttonPanel, BorderLayout.CENTER);
+
+        // START QUESTION
+        chooseAnimal();
+        setVisible(true);
+    }
+
+    public void styleButton(JButton button) {
+
+        button.setFont( new Font("Segoe UI", Font.BOLD, 18)  );
+        button.setFocusPainted(false);
+        button.setBackground(new Color(46, 125, 50));
+        button.setForeground(Color.WHITE);
+        button.setCursor(new Cursor(Cursor.HAND_CURSOR) );}
+
+    // CHOOSE pet
+public void chooseAnimal() {
+
+    int number;
+
+    do {
+        number = random.nextInt(animals.length);
+
+    } while (
+            currentAnimal != null &&
+            animals[number].equals(currentAnimal)
+    );
+
+    currentAnimal = animals[number];
+}
+
+    // PLAY SOUND
+    public void playSound(String animal) {
+
+        try {
+
+            // Stop Sound
+            if (clip != null) {
+
+                clip.stop();
+
+                clip.close();
+            }
+
+            // FILE NAME
+            String fileName =
+                    animal.toLowerCase() + ".wav";
+
+            File soundFile = new File(fileName);
+
+            if (!soundFile.exists()) {
+
+                resultLabel.setText(
+                        "Missing File: " + fileName
+                );
+
+                return;
+            }
+
+            // Audio
+            AudioInputStream audio = AudioSystem.getAudioInputStream(soundFile);
+
+            clip = AudioSystem.getClip();
+            clip.open(audio);
+            clip.start();
+
+            resultLabel.setText("Listen Carefully..." );
+
+        } catch (Exception e) {
+
+            resultLabel.setText("Sound Error!" );
+            
+            e.printStackTrace();
+        }
+    }
+
+    // Check Answer
+    public void checkAnswer(String answer) {
+
+        if (answered) {
+            return;
+        }
+        answered = true;
+
+        questionNumber++;
+
+        // Correct Answer
+        if (answer.equalsIgnoreCase(currentAnimal)) {
+
+            score++;
+
+            scoreLabel.setText(
+                    "Score: " + score
+            );
+
+            resultLabel.setText(
+                    "Correct!"
+            );
+        }
+
+        // Wrong Answer
+        else {
+
+            resultLabel.setText(
+                    "Wrong! Answer: " + currentAnimal
+            );
+        }
+
+        // End game
+        if (questionNumber >= totalQuestions) {
+
+            saveScore();
+
+            dispose();
+
+            new GameOver( playerName, score,totalQuestions  );
+
+            return;}
+
+        // N. Question
+        chooseAnimal();
+
+        answered = false;
+    }
+
+  // Save Score
+    public void saveScore() {
+
+        try {
+
+            FileWriter writer =   new FileWriter( "scores.txt",true );
+
+            writer.write( "Player: " + playerName + " | Score: " + score +"\n" );
+
+            writer.close();
+
+        } catch (Exception e) {
+
+            e.printStackTrace();
+        }
+    }
+
+    // B. EVENTS
+    @Override
+    public void actionPerformed(ActionEvent e) {
+
+        // Play sound
+        if (e.getSource() == playButton) {
+
+            playSound(currentAnimal);
+        }
+
+        // Answer button
+        else {
+
+            JButton button =
+                    (JButton) e.getSource();
+
+            String answer =
+                    button.getText();
+
+            checkAnswer(answer);
+        }
+    }
+}
