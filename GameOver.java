@@ -1,0 +1,114 @@
+package sountestbeta1.newpackage;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.*;
+
+public class GameOver extends JFrame implements ActionListener {
+
+    JLabel titleLabel;
+    JLabel playerLabel;
+    JLabel scoreLabel;
+
+    JButton playAgainButton;
+    JButton exitButton;
+
+    JPanel panel;
+
+    public GameOver(
+            String playerName,
+            int score,
+            int totalQuestions
+    ) {
+
+        // window
+        setTitle("Game Over");
+        setSize(600, 400);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setLocationRelativeTo(null);
+        setResizable(false);
+
+        // panel
+        panel = new JPanel();
+        
+        panel.setLayout( new GridLayout(5, 1, 15, 15) );
+        
+        panel.setBackground(new Color(30, 30, 30));
+
+        // label
+        titleLabel = new JLabel("QUIZ FINISHED!", SwingConstants.CENTER );
+        
+        titleLabel.setFont( new Font("Segoe UI", Font.BOLD, 34));
+
+        titleLabel.setForeground(Color.YELLOW);
+
+        playerLabel = new JLabel("Player: " + playerName,SwingConstants.CENTER );
+
+        playerLabel.setFont(new Font("Segoe UI", Font.PLAIN, 24) );
+
+        playerLabel.setForeground(Color.WHITE);
+
+        scoreLabel = new JLabel("Final Score: " +score + " / " + totalQuestions,      SwingConstants.CENTER );
+        
+        scoreLabel.setFont( new Font("Segoe UI", Font.BOLD, 28) );
+
+        scoreLabel.setForeground(Color.GREEN);
+
+        // button
+        playAgainButton = new JButton("PLAY AGAIN");
+
+        exitButton = new JButton("EXIT");
+
+        styleButton(playAgainButton);
+
+        styleButton(exitButton);
+
+        playAgainButton.addActionListener(this);
+
+        exitButton.addActionListener(this);
+
+       
+        panel.add(titleLabel);
+
+        panel.add(playerLabel);
+
+        panel.add(scoreLabel);
+
+        panel.add(playAgainButton);
+
+        panel.add(exitButton);
+
+        add(panel);
+
+        setVisible(true);
+    }
+
+    
+    public void styleButton(JButton button) {
+
+        button.setFont(new Font("Segoe UI", Font.BOLD, 20) );
+
+        button.setBackground(new Color(46, 125, 50) );
+
+        button.setForeground(Color.WHITE);
+
+        button.setFocusPainted(false);
+    }
+
+    // B event
+    @Override
+    public void actionPerformed(ActionEvent e) {
+
+        if (e.getSource() == playAgainButton) {
+
+            new MainMenu();
+
+            dispose();
+        }
+
+        if (e.getSource() == exitButton) {
+
+            System.exit(0);
+        }
+    }
+}
